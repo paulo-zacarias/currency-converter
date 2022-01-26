@@ -1,0 +1,50 @@
+<form class="example-form">
+  <mat-form-field class="example-full-width" appearance="fill">
+    <mat-label>Type to search</mat-label>
+    <input
+      type="text"
+      placeholder="Pick one"
+      aria-label="Number"
+      matInput
+      [formControl]="convertFromControl"
+      [matAutocomplete]="convertFrom"
+    />
+    <mat-autocomplete
+      #convertFrom="matAutocomplete"
+      [autoActiveFirstOption]="true"
+    >
+      <mat-option
+        *ngFor="let option of fromOptions | async"
+        [value]="option.id"
+      >
+        {{ option.id }} - {{ option.currencyName }}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+</form>
+<form>
+  <mat-form-field class="example-full-width" appearance="fill">
+    <mat-label>Type to search</mat-label>
+    <input
+      type="text"
+      placeholder="Pick one"
+      aria-label="Number"
+      matInput
+      [formControl]="convertToControl"
+      [matAutocomplete]="convertTo"
+    />
+    <mat-autocomplete
+      #convertTo="matAutocomplete"
+      [autoActiveFirstOption]="true"
+    >
+      <mat-option *ngFor="let option of toOptions | async" [value]="option.id">
+        {{ option.id }} - {{ option.currencyName }}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+</form>
+
+<button (click)="swapSelection()">Swap</button>
+
+{{ convertFromControl.value }}
+{{ convertToControl.value }}
