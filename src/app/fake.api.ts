@@ -771,3 +771,7 @@ export const DATA = `{
     }
   }
 `;
+
+export const RESULT = `{
+  "USD_EUR": 0.89737
+}`;

@@ -1,50 +1,81 @@
-<form class="example-form">
-  <mat-form-field class="example-full-width" appearance="fill">
-    <mat-label>Type to search</mat-label>
-    <input
-      type="text"
-      placeholder="Pick one"
-      aria-label="Number"
-      matInput
-      [formControl]="convertFromControl"
-      [matAutocomplete]="convertFrom"
-    />
-    <mat-autocomplete
-      #convertFrom="matAutocomplete"
-      [autoActiveFirstOption]="true"
-    >
-      <mat-option
-        *ngFor="let option of fromOptions | async"
-        [value]="option.id"
-      >
-        {{ option.id }} - {{ option.currencyName }}
-      </mat-option>
-    </mat-autocomplete>
-  </mat-form-field>
-</form>
-<form>
-  <mat-form-field class="example-full-width" appearance="fill">
-    <mat-label>Type to search</mat-label>
-    <input
-      type="text"
-      placeholder="Pick one"
-      aria-label="Number"
-      matInput
-      [formControl]="convertToControl"
-      [matAutocomplete]="convertTo"
-    />
-    <mat-autocomplete
-      #convertTo="matAutocomplete"
-      [autoActiveFirstOption]="true"
-    >
-      <mat-option *ngFor="let option of toOptions | async" [value]="option.id">
-        {{ option.id }} - {{ option.currencyName }}
-      </mat-option>
-    </mat-autocomplete>
-  </mat-form-field>
-</form>
+<mat-card style="text-align: center">
+  <mat-card-title>Currency Converter</mat-card-title>
+  <mat-card-subtitle>Welcome to a simple currency converter.</mat-card-subtitle>
+  <mat-card-content>
+    <form class="form-container">
+      <mat-form-field appearance="outline">
+        <mat-label>Amount</mat-label>
+        <input matInput [formControl]="amountControl" type="number" min="0" />
+      </mat-form-field>
 
-<button (click)="swapSelection()">Swap</button>
+      <mat-form-field appearance="outline">
+        <mat-label>From</mat-label>
+        <input
+          type="text"
+          placeholder="Pick one"
+          aria-label=""
+          matInput
+          [formControl]="convertFromControl"
+          [matAutocomplete]="convertFrom"
+        />
+        <mat-autocomplete
+          #convertFrom="matAutocomplete"
+          [autoActiveFirstOption]="true"
+        >
+          <mat-option
+            *ngFor="let option of fromOptions | async"
+            [value]="option.id"
+          >
+            {{ option.id }} - {{ option.currencyName }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
 
-{{ convertFromControl.value }}
-{{ convertToControl.value }}
+      <button type="button" mat-fab aria-label="" (click)="swapSelection()">
+        <mat-icon>swap_horiz</mat-icon>
+      </button>
+
+      <mat-form-field appearance="outline">
+        <mat-label>To</mat-label>
+        <input
+          type="text"
+          placeholder="Pick one"
+          aria-label=""
+          matInput
+          [formControl]="convertToControl"
+          [matAutocomplete]="convertTo"
+        />
+        <mat-autocomplete
+          (optionSelected)="selectionChanged()"
+          #convertTo="matAutocomplete"
+          [autoActiveFirstOption]="true"
+        >
+          <mat-option
+            *ngFor="let option of toOptions | async"
+            [value]="option.id"
+          >
+            {{ option.id }} - {{ option.currencyName }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </form>
+
+    <div *ngIf="convertionRate && amountControl.valid">
+      <div>
+        <h5>{{ amountToConvert }} {{ convertFromControl.value }} =</h5>
+      </div>
+      <div>
+        <h2>{{ convertedAmout }} {{ convertToControl.value }}</h2>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<!-- <div *ngIf="convertionRate && amountControl.valid">
+  <div>
+    <h5>{{ amountToConvert }} {{ convertFromControl.value }} =</h5>
+  </div>
+  <div>
+    <h2>{{ convertedAmout }} {{ convertToControl.value }}</h2>
+  </div>
+</div> -->

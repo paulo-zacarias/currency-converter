@@ -3,3 +3,9 @@ export interface ICurrency {
   currencySymbol: string;
   id: string;
 }
+
+export interface IConvertRate {
+  currency: string;
+  rate: number;
+  to: string;
+}

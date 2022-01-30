@@ -1,4 +1,10 @@
-<app-currency-converter
-  *ngIf="listOfCurrencies"
-  [listOfCurrencies]="listOfCurrencies"
-></app-currency-converter>
+<div class="center-content">
+  <div class="width-50">
+    <app-currency-converter
+      *ngIf="listOfCurrencies"
+      [listOfCurrencies]="listOfCurrencies"
+      [convertionRate]="convertionRate"
+      (newSelection)="newSelectionHandler($event)"
+    ></app-currency-converter>
+  </div>
+</div>

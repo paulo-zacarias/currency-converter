@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ICurrency } from './currency-converter.model';
+import { IConvertRate, ICurrency } from './shared/currency-converter.model';
 import { map } from 'rxjs/operators';
-import { DATA } from '../fake.api';
+import { DATA, RESULT } from '../fake.api';
 import { of } from 'rxjs';
 
 @Injectable({
@@ -57,5 +57,26 @@ export class CurrencyConverterService {
         return orderedList;
       })
     );
+  }
+
+  getCovertionRate(currencyPair: string) {
+    return of(JSON.parse(RESULT)).pipe(
+      map((response: any) => {
+        let rate = {} as IConvertRate;
+        for (let el in response) {
+          const currencies = this.splitCurrencies(el);
+          rate = {
+            currency: currencies[0],
+            rate: response[el],
+            to: currencies[1],
+          };
+        }
+        return rate;
+      })
+    );
+  }
+
+  private splitCurrencies(text: string) {
+    return text.split('_');
   }
 }

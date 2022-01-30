@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { ICurrency } from './currency-converter/currency-converter.model';
+import {
+  IConvertRate,
+  ICurrency,
+} from './currency-converter/shared/currency-converter.model';
 import { CurrencyConverterService } from './currency-converter/currency-converter.service';
 
 @Component({
@@ -9,11 +12,18 @@ import { CurrencyConverterService } from './currency-converter/currency-converte
 })
 export class AppComponent implements OnInit {
   listOfCurrencies: ICurrency[] = [];
+  convertionRate!: IConvertRate;
 
   constructor(private cc: CurrencyConverterService) {}
   ngOnInit(): void {
     this.cc.getListOfCurrencies().subscribe((currencies) => {
       this.listOfCurrencies = [...this.listOfCurrencies, ...currencies];
     });
+  }
+
+  newSelectionHandler(event: string) {
+    this.cc
+      .getCovertionRate(event)
+      .subscribe((rate) => (this.convertionRate = rate));
   }
 }
