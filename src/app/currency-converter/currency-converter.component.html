@@ -1,11 +1,25 @@
 <mat-card style="text-align: center">
-  <mat-card-title>Currency Converter</mat-card-title>
-  <mat-card-subtitle>Welcome to a simple currency converter.</mat-card-subtitle>
+  <mat-card-title class="cy-card-title">Currency Converter</mat-card-title>
+  <mat-card-subtitle class="cy-card-subtitle"
+    >Welcome to a simple currency converter.</mat-card-subtitle
+  >
   <mat-card-content>
     <form class="form-container">
       <mat-form-field appearance="outline">
         <mat-label>Amount</mat-label>
-        <input matInput [formControl]="amountControl" type="number" min="0" />
+        <input
+          matInput
+          [formControl]="amountControl"
+          type="number"
+          min="0"
+          class="cy-amount-input"
+        />
+        <mat-error
+          *ngIf="!amountControl.valid && amountControl.touched"
+          class="cy-amount-input-error"
+        >
+          {{ getAmountErrorMsg() }}
+        </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline">
@@ -17,8 +31,10 @@
           matInput
           [formControl]="convertFromControl"
           [matAutocomplete]="convertFrom"
+          class="cy-convert-from-dropdown"
         />
         <mat-autocomplete
+          (optionSelected)="selectionChanged()"
           #convertFrom="matAutocomplete"
           [autoActiveFirstOption]="true"
         >
@@ -29,11 +45,24 @@
             {{ option.id }} - {{ option.currencyName }}
           </mat-option>
         </mat-autocomplete>
+        <mat-error
+          *ngIf="convertFromControl.hasError('invalidCurrency')"
+          class="cy-currency-from-error"
+        >
+          Invalid Currency
+        </mat-error>
       </mat-form-field>
-
-      <button type="button" mat-fab aria-label="" (click)="swapSelection()">
-        <mat-icon>swap_horiz</mat-icon>
-      </button>
+      <div>
+        <button
+          type="button"
+          mat-fab
+          aria-label=""
+          (click)="swapSelection()"
+          class="cy-swap-button"
+        >
+          <mat-icon>swap_horiz</mat-icon>
+        </button>
+      </div>
 
       <mat-form-field appearance="outline">
         <mat-label>To</mat-label>
@@ -44,6 +73,7 @@
           matInput
           [formControl]="convertToControl"
           [matAutocomplete]="convertTo"
+          class="cy-convert-to-dropdown"
         />
         <mat-autocomplete
           (optionSelected)="selectionChanged()"
@@ -57,25 +87,33 @@
             {{ option.id }} - {{ option.currencyName }}
           </mat-option>
         </mat-autocomplete>
+        <mat-error
+          *ngIf="convertToControl.hasError('invalidCurrency')"
+          class="cy-currency-to-error"
+        >
+          Invalid Currency
+        </mat-error>
       </mat-form-field>
     </form>
 
-    <div *ngIf="convertionRate && amountControl.valid">
+    <div *ngIf="convertionRate && amountControl.valid; else spinner">
       <div>
-        <h5>{{ amountToConvert }} {{ convertFromControl.value }} =</h5>
+        <h5 class="cy-result-from">
+          {{ amountToConvert | number: "1.2-2" }}
+          {{ convertionRate.currency }} =
+        </h5>
       </div>
       <div>
-        <h2>{{ convertedAmout }} {{ convertToControl.value }}</h2>
+        <h2 class="cy-result-to">
+          {{ convertedAmout | number: "1.2-2" }} {{ convertionRate.to }}
+        </h2>
       </div>
     </div>
+
+    <ng-template #spinner>
+      <div *ngIf="loading" class="center-content">
+        <mat-spinner [diameter]="50"></mat-spinner>
+      </div>
+    </ng-template>
   </mat-card-content>
 </mat-card>
-
-<!-- <div *ngIf="convertionRate && amountControl.valid">
-  <div>
-    <h5>{{ amountToConvert }} {{ convertFromControl.value }} =</h5>
-  </div>
-  <div>
-    <h2>{{ convertedAmout }} {{ convertToControl.value }}</h2>
-  </div>
-</div> -->

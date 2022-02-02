@@ -19,6 +19,7 @@ import { IConvertRate, ICurrency } from './shared/currency-converter.model';
 import {
   validNumberLength,
   validCurrency,
+  isNumber,
 } from './shared/custom-form-validation';
 
 @Component({
@@ -31,26 +32,28 @@ export class CurrencyConverterComponent
   implements OnInit, AfterViewInit, OnChanges
 {
   @Input() listOfCurrencies: ICurrency[] = [];
+  @Input() loading = false;
+  @Input() convertionRate!: IConvertRate;
   @Output() newSelection = new EventEmitter<string>();
   convertFromControl: FormControl = new FormControl();
   convertToControl: FormControl = new FormControl();
   amountControl: FormControl = new FormControl('', [
     Validators.required,
     validNumberLength(new RegExp('^[0-9]{0,9}$')),
+    isNumber,
   ]);
   fromOptions!: Observable<ICurrency[]>;
   toOptions!: Observable<ICurrency[]>;
-  private unsubscribe$ = new Subject();
-  @Input() convertionRate!: IConvertRate;
   convertedAmout: number = 0;
   amountToConvert: number = 0;
+  private unsubscribe$ = new Subject();
 
   @ViewChildren(MatAutocompleteTrigger)
   triggers!: QueryList<MatAutocompleteTrigger>;
 
   constructor() {}
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.convertionRate) {
+    if (this.convertionRate && changes['convertionRate']) {
       const rate = changes['convertionRate'].currentValue.rate;
       this.amountToConvert = this.amountControl.value;
       this.convertedAmout = this.amountToConvert * rate;
@@ -111,6 +114,22 @@ export class CurrencyConverterComponent
         option.currencyName.toUpperCase().includes(input)
       );
     });
+  }
+
+  getAmountErrorMsg(): string {
+    if (this.amountControl.hasError('required')) return 'Required field';
+    if (this.amountControl.hasError('notNumber'))
+      return 'Value inserted is not a number';
+    if (this.amountControl.hasError('exceededMaximumNumberLength'))
+      return 'Maximum number lenght is 9';
+    if (this.amountControl.hasError('required')) return 'Required field';
+    return 'Error';
+  }
+
+  getCurrencyErrorMsg(control: any): string {
+    if (control.hasError('invalidCurrency')) return 'Invalid currency';
+    if (control.hasError('required')) return 'Required field';
+    return 'Error';
   }
 
   selectionChanged() {

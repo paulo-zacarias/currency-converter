@@ -6,3 +6,9 @@
   gap: 10px;
   row-gap: 10px;
 }
+
+@media screen and (max-width: 720px) {
+  .form-container {
+    flex-direction: column;
+  }
+}

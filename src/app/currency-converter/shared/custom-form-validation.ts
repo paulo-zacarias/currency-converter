@@ -15,8 +15,11 @@ export function validCurrency(list: ICurrency[]): ValidatorFn {
 export function validNumberLength(numRe: RegExp): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const exceedsMaxLength = !numRe.test(control.value);
-    return exceedsMaxLength
-      ? { 'Maximum allowed number of digits is 9': true }
-      : null;
+    return exceedsMaxLength ? { exceededMaximumNumberLength: true } : null;
   };
+}
+
+export function isNumber(control: AbstractControl): ValidationErrors | null {
+  if (typeof control.value !== 'number') return { notNumber: true };
+  return null;
 }
