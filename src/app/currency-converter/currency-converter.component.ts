@@ -5,6 +5,7 @@ import {
   EventEmitter,
   Input,
   OnChanges,
+  OnDestroy,
   OnInit,
   Output,
   QueryList,
@@ -29,7 +30,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CurrencyConverterComponent
-  implements OnInit, AfterViewInit, OnChanges
+  implements OnInit, AfterViewInit, OnChanges, OnDestroy
 {
   @Input() listOfCurrencies: ICurrency[] = [];
   @Input() loading = false;
@@ -46,7 +47,7 @@ export class CurrencyConverterComponent
   toOptions!: Observable<ICurrency[]>;
   convertedAmout: number = 0;
   amountToConvert: number = 0;
-  private unsubscribe$ = new Subject();
+  private unsubscribe$ = new Subject<void>();
 
   @ViewChildren(MatAutocompleteTrigger)
   triggers!: QueryList<MatAutocompleteTrigger>;
@@ -72,12 +73,14 @@ export class CurrencyConverterComponent
 
     this.fromOptions = this.convertFromControl.valueChanges.pipe(
       startWith(''),
-      map((val) => this.filter(val))
+      map((val) => this.filter(val)),
+      takeUntil(this.unsubscribe$)
     );
 
     this.toOptions = this.convertToControl.valueChanges.pipe(
       startWith(''),
-      map((val) => this.filter(val))
+      map((val) => this.filter(val)),
+      takeUntil(this.unsubscribe$)
     );
 
     this.amountControl.valueChanges
@@ -85,25 +88,36 @@ export class CurrencyConverterComponent
       .subscribe(() => this.selectionChanged());
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     //https://github.com/angular/components/issues/3334
 
-    this.triggers.get(0)?.panelClosingActions.subscribe((e: any) => {
-      if (!(e && e.source)) {
-        if (!this.convertFromControl.valid) {
-          this.convertFromControl.setValue('');
-          this.triggers.get(0)?.closePanel();
+    this.triggers
+      .get(0)
+      ?.panelClosingActions.pipe(takeUntil(this.unsubscribe$))
+      .subscribe((e: any) => {
+        if (!(e && e.source)) {
+          if (!this.convertFromControl.valid) {
+            this.convertFromControl.setValue('');
+            this.triggers.get(0)?.closePanel();
+          }
         }
-      }
-    });
-    this.triggers.get(1)?.panelClosingActions.subscribe((e: any) => {
-      if (!(e && e.source)) {
-        if (!this.convertToControl.valid) {
-          this.convertToControl.setValue('');
-          this.triggers.get(1)?.closePanel();
+      });
+    this.triggers
+      .get(1)
+      ?.panelClosingActions.pipe(takeUntil(this.unsubscribe$))
+      .subscribe((e: any) => {
+        if (!(e && e.source)) {
+          if (!this.convertToControl.valid) {
+            this.convertToControl.setValue('');
+            this.triggers.get(1)?.closePanel();
+          }
         }
-      }
-    });
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   private filter(val: string): ICurrency[] {
@@ -132,7 +146,7 @@ export class CurrencyConverterComponent
     return 'Error';
   }
 
-  selectionChanged() {
+  selectionChanged(): void {
     if (
       this.convertFromControl.valid &&
       this.convertToControl.valid &&
@@ -144,7 +158,7 @@ export class CurrencyConverterComponent
     }
   }
 
-  swapSelection() {
+  swapSelection(): void {
     const temp = this.convertFromControl.value;
     this.convertFromControl.setValue(this.convertToControl.value);
     this.convertToControl.setValue(temp);
