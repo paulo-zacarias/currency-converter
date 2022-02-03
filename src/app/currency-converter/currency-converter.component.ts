@@ -2,6 +2,7 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   EventEmitter,
   Input,
   OnChanges,
@@ -10,6 +11,7 @@ import {
   Output,
   QueryList,
   SimpleChanges,
+  ViewChild,
   ViewChildren,
 } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
@@ -22,6 +24,11 @@ import {
   validCurrency,
   isNumber,
 } from './shared/custom-form-validation';
+
+enum Triggers {
+  FromControl,
+  ToControl,
+}
 
 @Component({
   selector: 'app-currency-converter',
@@ -51,6 +58,10 @@ export class CurrencyConverterComponent
 
   @ViewChildren(MatAutocompleteTrigger)
   triggers!: QueryList<MatAutocompleteTrigger>;
+  @ViewChild('inputFrom') inputFrom!: ElementRef;
+  @ViewChild('inputTo') inputTo!: ElementRef;
+
+  public TriggersEnum = Triggers;
 
   constructor() {}
   ngOnChanges(changes: SimpleChanges): void {
@@ -73,13 +84,15 @@ export class CurrencyConverterComponent
 
     this.fromOptions = this.convertFromControl.valueChanges.pipe(
       startWith(''),
-      map((val) => this.filter(val)),
+      map((value) => (typeof value === 'string' ? value : value.id)),
+      map((id) => (id ? this.filter(id) : this.listOfCurrencies.slice())),
       takeUntil(this.unsubscribe$)
     );
 
     this.toOptions = this.convertToControl.valueChanges.pipe(
       startWith(''),
-      map((val) => this.filter(val)),
+      map((value) => (typeof value === 'string' ? value : value.id)),
+      map((id) => (id ? this.filter(id) : this.listOfCurrencies.slice())),
       takeUntil(this.unsubscribe$)
     );
 
@@ -92,24 +105,24 @@ export class CurrencyConverterComponent
     //https://github.com/angular/components/issues/3334
 
     this.triggers
-      .get(0)
+      .get(this.TriggersEnum.FromControl)
       ?.panelClosingActions.pipe(takeUntil(this.unsubscribe$))
       .subscribe((e: any) => {
         if (!(e && e.source)) {
           if (!this.convertFromControl.valid) {
             this.convertFromControl.setValue('');
-            this.triggers.get(0)?.closePanel();
+            this.triggers.get(this.TriggersEnum.FromControl)?.closePanel();
           }
         }
       });
     this.triggers
-      .get(1)
+      .get(this.TriggersEnum.ToControl)
       ?.panelClosingActions.pipe(takeUntil(this.unsubscribe$))
       .subscribe((e: any) => {
         if (!(e && e.source)) {
           if (!this.convertToControl.valid) {
             this.convertToControl.setValue('');
-            this.triggers.get(1)?.closePanel();
+            this.triggers.get(this.TriggersEnum.ToControl)?.closePanel();
           }
         }
       });
@@ -153,7 +166,7 @@ export class CurrencyConverterComponent
       this.amountControl.valid
     ) {
       const newSelectionValue =
-        this.convertFromControl.value + '_' + this.convertToControl.value;
+        this.convertFromControl.value.id + '_' + this.convertToControl.value.id;
       this.newSelection.emit(newSelectionValue);
     }
   }
@@ -163,5 +176,22 @@ export class CurrencyConverterComponent
     this.convertFromControl.setValue(this.convertToControl.value);
     this.convertToControl.setValue(temp);
     this.selectionChanged();
+  }
+
+  displayFn(option: ICurrency): string {
+    return option && option.id ? `${option.id} - ${option.currencyName}` : '';
+  }
+
+  clearInput(evt: any, trigger: number): void {
+    evt.stopPropagation();
+    if (trigger === this.TriggersEnum.FromControl) {
+      this.convertFromControl.setValue('');
+      this.inputFrom?.nativeElement.focus();
+      this.triggers.get(this.TriggersEnum.FromControl)?.openPanel();
+    } else {
+      this.convertToControl.setValue('');
+      this.inputTo?.nativeElement.focus();
+      this.triggers.get(this.TriggersEnum.ToControl)?.openPanel();
+    }
   }
 }

@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { IConvertRate, ICurrency } from './shared/currency-converter.model';
 import { map } from 'rxjs/operators';
 import { AppSettingsService } from '../shared/app-settings.service';
+import { of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -38,29 +39,8 @@ export class CurrencyConverterService {
         })
       );
   }
-  //   return of(JSON.parse(DATA)).pipe(
-  //     map((response: any) => {
-  //       let tranformedData: ICurrency[] = [];
-  //       for (let el in response.results) {
-  //         const cur: ICurrency = {
-  //           currencyName: response.results[el].currencyName,
-  //           currencySymbol: response.results[el].currencySymbol
-  //             ? response.results[el].currencySymbol
-  //             : '',
-  //           id: response.results[el].id.toUpperCase(),
-  //         };
-  //         tranformedData.push(cur);
-  //       }
-  //       const orderedList: ICurrency[] = tranformedData.sort((a, b) =>
-  //         a.id.localeCompare(b.id)
-  //       );
-  //       return orderedList;
-  //     })
-  //   );
-  // }
 
   getCovertionRate(currencyPair: string) {
-    // return of(JSON.parse(RESULT)).pipe(
     return this.http
       .get<IConvertRate[]>(
         `${this.appSettings.apiUrl}convert?q=${currencyPair}&compact=ultra&apiKey=${this.appSettings.apiKey}`

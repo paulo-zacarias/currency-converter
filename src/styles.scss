@@ -13,3 +13,21 @@ body {
   display: flex;
   justify-content: center;
 }
+
+.mat-form-field-appearance-outline .mat-form-field-prefix {
+  top: 0 !important;
+}
+
+.mat-form-field.form-field-flex {
+  flex: 1 1 auto;
+}
+
+@media screen and (min-width: 740px) {
+  .main-content-width-50 {
+    min-width: 50%;
+  }
+}
+
+.mat-form-field-infix {
+  width: unset !important;
+}

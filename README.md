@@ -2,6 +2,14 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.14.
 
+## API Key
+
+This application uses API from the [Free Currency Converter API](https://free.currencyconverterapi.com/). Key must be requested separately using personal email and saved to the application [settings](./src/assets/settings/app-settings.json), under the property "apiKey".
+
+## Dependencies
+
+Run `npm install` to install project dependencies.
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
@@ -20,7 +28,8 @@ Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.
 
 ## Running end-to-end tests
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+End-to-end tests run within [Docker](https://www.docker.com/) containers. Run `docker compose up` to build the containers, tests will run automatically and results printed out to the console.
+Note that when running docker compose, the application is equally available at `http://localhost:4200/`.
 
 ## Further help
 

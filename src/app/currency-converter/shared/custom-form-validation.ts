@@ -3,8 +3,9 @@ import { ICurrency } from './currency-converter.model';
 
 export function validCurrency(list: ICurrency[]): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
-    const inputValue = control.value.toUpperCase();
-    if (!list.some((currency) => currency.id === inputValue)) {
+    const inputValue =
+      typeof control.value === 'string' ? control.value : control.value.id;
+    if (!list.some((currency) => currency.id === inputValue.toUpperCase())) {
       return { invalidCurrency: true };
     }
 

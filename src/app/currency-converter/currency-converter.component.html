@@ -5,7 +5,11 @@
   >
   <mat-card-content>
     <form class="form-container">
-      <mat-form-field appearance="outline">
+      <mat-form-field
+        appearance="outline"
+        floatLabel="always"
+        class="form-field-flex"
+      >
         <mat-label>Amount</mat-label>
         <input
           matInput
@@ -13,7 +17,16 @@
           type="number"
           min="0"
           class="cy-amount-input"
+          placeholder="1.00"
         />
+        <span
+          *ngIf="!convertFromControl.value.currencySymbol; else currencySymbol"
+          matPrefix
+          >$&nbsp;</span
+        >
+        <ng-template #currencySymbol matPrefix
+          >{{ convertFromControl.value.currencySymbol }}&nbsp;</ng-template
+        >
         <mat-error
           *ngIf="!amountControl.valid && amountControl.touched"
           class="cy-amount-input-error"
@@ -22,11 +35,16 @@
         </mat-error>
       </mat-form-field>
 
-      <mat-form-field appearance="outline">
+      <mat-form-field
+        appearance="outline"
+        floatLabel="always"
+        class="form-field-flex"
+      >
         <mat-label>From</mat-label>
         <input
+          #inputFrom
           type="text"
-          placeholder="Pick one"
+          placeholder="Choose currency"
           aria-label=""
           matInput
           [formControl]="convertFromControl"
@@ -37,14 +55,26 @@
           (optionSelected)="selectionChanged()"
           #convertFrom="matAutocomplete"
           [autoActiveFirstOption]="true"
+          [displayWith]="displayFn"
         >
           <mat-option
             *ngFor="let option of fromOptions | async"
-            [value]="option.id"
+            [value]="option"
           >
             {{ option.id }} - {{ option.currencyName }}
           </mat-option>
         </mat-autocomplete>
+        <div matSuffix>
+          <button
+            mat-icon-button
+            *ngIf="convertFromControl.value; else expand"
+            (click)="clearInput($event, TriggersEnum.FromControl)"
+            aria-label="Clear"
+            type="button"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
         <mat-error
           *ngIf="convertFromControl.hasError('invalidCurrency')"
           class="cy-currency-from-error"
@@ -64,11 +94,16 @@
         </button>
       </div>
 
-      <mat-form-field appearance="outline">
+      <mat-form-field
+        appearance="outline"
+        floatLabel="always"
+        class="form-field-flex"
+      >
         <mat-label>To</mat-label>
         <input
+          #inputTo
           type="text"
-          placeholder="Pick one"
+          placeholder="Choose currency"
           aria-label=""
           matInput
           [formControl]="convertToControl"
@@ -79,14 +114,24 @@
           (optionSelected)="selectionChanged()"
           #convertTo="matAutocomplete"
           [autoActiveFirstOption]="true"
+          [displayWith]="displayFn"
         >
-          <mat-option
-            *ngFor="let option of toOptions | async"
-            [value]="option.id"
-          >
+          <mat-option *ngFor="let option of toOptions | async" [value]="option">
             {{ option.id }} - {{ option.currencyName }}
           </mat-option>
         </mat-autocomplete>
+        <div matSuffix>
+          <button
+            *ngIf="convertToControl.value; else expand"
+            mat-icon-button
+            (click)="clearInput($event, TriggersEnum.ToControl)"
+            aria-label="Clear"
+            type="button"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
         <mat-error
           *ngIf="convertToControl.hasError('invalidCurrency')"
           class="cy-currency-to-error"
@@ -117,3 +162,9 @@
     </ng-template>
   </mat-card-content>
 </mat-card>
+
+<ng-template #expand>
+  <button mat-icon-button aria-label="Expand" type="button">
+    <mat-icon>expand_more</mat-icon>
+  </button>
+</ng-template>
