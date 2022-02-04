@@ -28,8 +28,13 @@ Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.
 
 ## Running end-to-end tests
 
-End-to-end tests run within [Docker](https://www.docker.com/) containers. Run `docker compose up` to build the containers, tests will run automatically and results printed out to the console.
-Note that when running docker compose, the application is equally available at `http://localhost:4200/`.
+Run `npm run e2e` to execute the end-to-end tests via [Cypress](https://www.cypress.io/).
+
+## Docker support
+
+Support for [Docker](https://www.docker.com/) containers is available. Run `docker compose up` to build and run the containers, the application will be available at `http://localhost:4200/`.
+
+End-to-end tests will run automatically and results will be printed out to the console. Run `docker compose up converter` instead to run the application without e2e tests.
 
 ## Further help
 

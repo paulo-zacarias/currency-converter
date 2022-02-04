@@ -49,7 +49,7 @@
           matInput
           [formControl]="convertFromControl"
           [matAutocomplete]="convertFrom"
-          class="cy-convert-from-dropdown"
+          class="cy-convert-from-input"
         />
         <mat-autocomplete
           (optionSelected)="selectionChanged()"
@@ -64,7 +64,7 @@
             {{ option.id }} - {{ option.currencyName }}
           </mat-option>
         </mat-autocomplete>
-        <div matSuffix>
+        <div matSuffix class="cy-clear-from-selection">
           <button
             mat-icon-button
             *ngIf="convertFromControl.value; else expand"
@@ -108,7 +108,7 @@
           matInput
           [formControl]="convertToControl"
           [matAutocomplete]="convertTo"
-          class="cy-convert-to-dropdown"
+          class="cy-convert-to-input"
         />
         <mat-autocomplete
           (optionSelected)="selectionChanged()"
@@ -120,7 +120,7 @@
             {{ option.id }} - {{ option.currencyName }}
           </mat-option>
         </mat-autocomplete>
-        <div matSuffix>
+        <div matSuffix class="cy-clear-to-selection">
           <button
             *ngIf="convertToControl.value; else expand"
             mat-icon-button

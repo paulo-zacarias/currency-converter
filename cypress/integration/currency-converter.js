@@ -1,7 +1,10 @@
 describe("Currency Converter e2e tests", () => {
   before(() => {
-    cy.visit("/");
-    // cy.visit(Cypress.env("baseUrl"));
+    if (Cypress.config().baseUrl) {
+      cy.visit("/");
+    } else {
+      cy.visit(Cypress.env("baseUrl"));
+    }
   });
 
   it("Page loads", () => {
@@ -10,8 +13,8 @@ describe("Currency Converter e2e tests", () => {
 
   it("Convert amount", () => {
     cy.get(".cy-amount-input").type(1);
-    cy.get(".cy-convert-from-dropdown").type("USD{enter}");
-    cy.get(".cy-convert-to-dropdown").type("EUR{enter}");
+    cy.get(".cy-convert-from-input").type("USD{enter}");
+    cy.get(".cy-convert-to-input").type("EUR{enter}");
     cy.get(".cy-result-from").should("contain", "USD");
     cy.get(".cy-result-to").should("contain", "EUR");
   });
@@ -29,8 +32,14 @@ describe("Currency Converter e2e tests", () => {
   });
 
   it("Invalid currency", () => {
-    cy.get(".cy-convert-from-dropdown").type("xpto");
+    cy.get(".cy-convert-from-input").type("xpto");
     cy.get("body").click();
     cy.get(".cy-currency-from-error").should("contain", "Invalid Currency");
+  });
+
+  it("Clear selection", () => {
+    cy.get(".cy-convert-to-input").invoke("val").should("contain", "USD");
+    cy.get(".cy-clear-to-selection").click();
+    cy.get(".cy-convert-to-input").invoke("val").should("be.empty");
   });
 });
