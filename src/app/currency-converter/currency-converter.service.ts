@@ -1,9 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { IConvertRate, ICurrency } from './shared/currency-converter.model';
-import { map } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { AppSettingsService } from '../shared/app-settings.service';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -36,7 +36,8 @@ export class CurrencyConverterService {
             a.id.localeCompare(b.id)
           );
           return orderedList;
-        })
+        }),
+        catchError(this.handleError)
       );
   }
 
@@ -57,11 +58,28 @@ export class CurrencyConverterService {
             };
           }
           return rate;
-        })
+        }),
+        catchError(this.handleError)
       );
   }
 
   private splitCurrencies(text: string) {
     return text.split('_');
+  }
+
+  private handleError(error: HttpErrorResponse) {
+    if (error.status === 0) {
+      // A client-side or network error occurred. Handle it accordingly.
+      console.error('An error occurred:', error.error);
+    } else {
+      // The backend returned an unsuccessful response code.
+      // The response body may contain clues as to what went wrong.
+      console.error(
+        `Backend returned code ${error.status}, body was: `,
+        error.error
+      );
+    }
+    // Return an observable with a user-facing error message.
+    return throwError('Something bad happened; please try again later.');
   }
 }

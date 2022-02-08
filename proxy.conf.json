@@ -1,0 +1,9 @@
+{
+  "/api/*": {
+    "target": "https://free.currconv.com",
+    "protocol": "https:",
+    "changeOrigin": true,
+    "secure": false,
+    "logLevel": "debug"
+  }
+}

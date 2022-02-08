@@ -15,14 +15,18 @@ export class AppComponent implements OnInit {
   listOfCurrencies: ICurrency[] = [];
   convertionRate!: IConvertRate;
   loading = false;
+  errorMessage = '';
 
   // title = 'currency-converter';
 
   constructor(private cc: CurrencyConverterService) {}
   ngOnInit(): void {
-    this.cc.getListOfCurrencies().subscribe((currencies) => {
-      this.listOfCurrencies = [...this.listOfCurrencies, ...currencies];
-    });
+    this.cc.getListOfCurrencies().subscribe(
+      (currencies) => {
+        this.listOfCurrencies = [...this.listOfCurrencies, ...currencies];
+      },
+      (error) => (this.errorMessage = error)
+    );
   }
 
   newSelectionHandler(event: string) {
@@ -30,6 +34,9 @@ export class AppComponent implements OnInit {
     this.cc
       .getCovertionRate(event)
       .pipe(finalize(() => (this.loading = false)))
-      .subscribe((rate) => (this.convertionRate = rate));
+      .subscribe(
+        (rate) => (this.convertionRate = rate),
+        (error) => (this.errorMessage = error)
+      );
   }
 }
